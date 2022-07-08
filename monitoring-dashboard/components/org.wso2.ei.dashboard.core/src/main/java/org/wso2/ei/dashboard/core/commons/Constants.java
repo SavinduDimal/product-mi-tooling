@@ -32,6 +32,7 @@ public final class Constants {
     }
 
     public static final String PROXY_SERVICES = "proxy-services";
+    public static final String REGISTRY_RESOURCES = "registry-resources";
     public static final String ENDPOINTS = "endpoints";
     public static final String INBOUND_ENDPOINTS = "inbound-endpoints";
     public static final String MESSAGE_STORES = "message-stores";

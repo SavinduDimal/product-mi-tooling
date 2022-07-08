@@ -162,6 +162,8 @@ export default class HTTPClient {
 
     static getArtifacts(artifactType, groupId, nodeList) {
         const resourcePath = `${groupId}/${artifactType}?nodes=${this.getNodeListAsQueryParams(nodeList)}`
+        console.log('resource path from ui to backend:')
+        console.log(resourcePath)
         return new Promise((resolve, reject) => {
             this.getResource(resourcePath).then(response => {
                 response.data.map(data => 
@@ -172,6 +174,13 @@ export default class HTTPClient {
                 reject(error)
             })
         });
+    }
+
+    static getRegistryArtifacts(groupId,path) {
+        const resourcePath = `${groupId}/registry-resources?path=${path}`
+        console.log('resource path from ui to backend:')
+        console.log(resourcePath)
+        return this.getResource(resourcePath)
     }
 
     static getCappArtifacts(groupId, nodeId, artifactName) {

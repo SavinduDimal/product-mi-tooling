@@ -28,17 +28,20 @@ import TablePagination from '@material-ui/core/TablePagination';
 import EnhancedTableHead from './TableHeaderCreater';
 import TableRowCreator from './TableRowCreator';
 
-export default function EnhancedTable(props) {
-    const { pageInfo, dataSet, retrieveData } = props;
+export default function EnhancedTableRegistry(props) {
+    const { pageInfo, dataSet, retrieveData,handleDoubleClick, registryPath } = props;
+    const newDataSet = dataSet.map(data => ({...data, fileIcon: addIconType(data)}));
+
+    const dataSetFiles = newDataSet.filter(data => data.mediaType !== 'directory');
+    const dataSetFolders = newDataSet.filter(data => data.mediaType === 'directory');
+    
     var headCells = pageInfo.headCells;
     var rowCount = dataSet.length;
-    console.log('Enhanced Table Console Logs:');
-    console.log(headCells);
-    console.log(rowCount);
-    const classes = useStyles();
+
+const classes = useStyles();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState(pageInfo.tableOrderBy);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [page, setPage] = React.useState(0);
 
     const handleRequestSort = (event, property) => {
@@ -56,6 +59,28 @@ export default function EnhancedTable(props) {
         setPage(0);
     };
 
+    function addIconType(data) {
+        if (data.mediaType === 'directory') {
+            return('folder');
+        } else if (data.childName.endsWith('.txt')){
+            return('text');        
+        } else if (data.childName.endsWith('.xml')){
+            return('xml');    
+        } else if (data.childName.endsWith('.csv')){
+            return('csv');    
+        } else if (data.childName.endsWith('.json')){
+            return('json');        
+        } else if (data.childName.endsWith('.yaml')){
+            return('yaml');        
+        } else if (data.childName.endsWith('.xslt')){
+            return('xslt');        
+        } else if (data.childName.endsWith('.properties')){
+            return('property');        
+        } else {
+            return('other');            
+        }       
+    }
+
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
@@ -71,14 +96,14 @@ export default function EnhancedTable(props) {
                             rowCount={rowCount}
                         />
                         <TableBody>
+                            {getPageComponents(stableSort(dataSetFolders, getComparator(order, orderBy)), stableSort(dataSetFiles, getComparator(order, orderBy)),page, rowsPerPage).map(row => <TableRowCreator pageInfo={pageInfo} data={row} headers={headCells} retrieveData={retrieveData} handleDoubleClick={handleDoubleClick} registryPath={registryPath}/>)}
 
-                            {stableSort(dataSet, getComparator(order, orderBy)).slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => <TableRowCreator pageInfo={pageInfo} data={row} headers={headCells} retrieveData={retrieveData}/>
-                            )}
                         </TableBody>
+
                     </Table>
                 </TableContainer>
                 <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
+                    rowsPerPageOptions={[10, 25, 50]}
                     component="div"
                     count={rowCount}
                     rowsPerPage={rowsPerPage}
@@ -120,6 +145,17 @@ function descendingComparator(a, b, orderBy) {
         return 1;
     }
     return 0;
+}
+
+function getPageComponents(folderArr, fileArr, page, rowsPerPage){
+
+    const finalArr = folderArr.concat(fileArr)
+    if (finalArr.length > 0 ) {
+        return finalArr.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    } else {
+        return []
+    }
+    
 }
 
 const useStyles = makeStyles((theme) => ({

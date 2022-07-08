@@ -46,6 +46,8 @@ export default function NodesCell(props) {
     });
 
     const toggleDrawer = (open) => (event) => {
+        console.log('drawer click')
+        console.log(event)
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
         }
